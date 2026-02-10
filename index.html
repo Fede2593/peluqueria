@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Peluquería Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Peluquería Manager</h1>
+      <p>Administra tu peluquería por ventanas: colaboradores, contabilidad, productos y asistencia.</p>
+    </header>
+
+    <nav class="tabs" aria-label="Ventanas principales">
+      <button class="tab-btn active" data-tab="colaboradores">Colaboradores</button>
+      <button class="tab-btn" data-tab="contabilidad">Contabilidad</button>
+      <button class="tab-btn" data-tab="productos">Productos</button>
+      <button class="tab-btn" data-tab="administradores">Administradores</button>
+    </nav>
+
+    <main>
+      <section class="tab-panel active" id="tab-colaboradores">
+        <div class="split-grid">
+          <article class="card">
+            <h2>Colaboradores</h2>
+            <form id="collaborator-form" class="grid-form">
+              <input name="name" placeholder="Nombre del colaborador" required />
+              <input
+                name="percent"
+                type="number"
+                min="1"
+                max="99"
+                step="0.01"
+                placeholder="% para colaborador"
+                required
+              />
+              <button type="submit">Agregar colaborador</button>
+            </form>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>% colaborador</th>
+                  <th>% negocio</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="collaborator-table"></tbody>
+            </table>
+          </article>
+
+          <article class="card">
+            <h2>Trabajos realizados</h2>
+            <form id="catalog-form" class="inline-form">
+              <input name="name" placeholder="Nuevo tipo de trabajo" required />
+              <button type="submit">Agregar tipo</button>
+            </form>
+            <ul id="catalog-list" class="chip-list"></ul>
+
+            <form id="work-form" class="grid-form top-space">
+              <select name="collaboratorId" required>
+                <option value="">Selecciona colaborador</option>
+              </select>
+              <select name="service" required>
+                <option value="">Tipo de trabajo</option>
+              </select>
+              <input name="client" placeholder="Cliente" required />
+              <input name="amount" type="number" min="0" step="0.01" placeholder="Monto" required />
+              <button type="submit">Registrar trabajo</button>
+            </form>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Colaborador</th>
+                  <th>Trabajo</th>
+                  <th>Total</th>
+                  <th>Para colaborador</th>
+                  <th>Para negocio</th>
+                </tr>
+              </thead>
+              <tbody id="work-table"></tbody>
+            </table>
+          </article>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="tab-contabilidad">
+        <article class="card">
+          <h2>Contabilidad: debe y haber</h2>
+          <p class="muted">Cuando registras un trabajo, la parte del negocio se agrega automáticamente al haber.</p>
+          <form id="ledger-form" class="grid-form">
+            <input name="description" placeholder="Descripción" required />
+            <select name="type" required>
+              <option value="debe">Debe (egreso)</option>
+              <option value="haber">Haber (ingreso)</option>
+            </select>
+            <input name="amount" type="number" min="0" step="0.01" placeholder="Monto" required />
+            <button type="submit">Registrar movimiento</button>
+          </form>
+
+          <div class="totals">
+            <div><strong>Total Debe:</strong> <span id="total-debe">$0.00</span></div>
+            <div><strong>Total Haber:</strong> <span id="total-haber">$0.00</span></div>
+            <div><strong>Balance:</strong> <span id="balance">$0.00</span></div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Tipo</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-table"></tbody>
+          </table>
+        </article>
+      </section>
+
+      <section class="tab-panel" id="tab-productos">
+        <article class="card">
+          <h2>Productos para venta</h2>
+          <form id="product-form" class="grid-form">
+            <input name="name" placeholder="Producto" required />
+            <input name="stock" type="number" min="0" placeholder="Stock" required />
+            <input name="price" type="number" min="0" step="0.01" placeholder="Precio" required />
+            <button type="submit">Guardar producto</button>
+          </form>
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Stock</th>
+                <th>Precio</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="product-table"></tbody>
+          </table>
+        </article>
+      </section>
+
+      <section class="tab-panel" id="tab-administradores">
+        <article class="card">
+          <h2>Administradores y asistencias</h2>
+          <form id="admin-form" class="inline-form">
+            <input name="name" placeholder="Nombre de administrador" required />
+            <button type="submit">Agregar administrador</button>
+          </form>
+          <table>
+            <thead>
+              <tr>
+                <th>Administrador</th>
+                <th>Asistencia hoy</th>
+                <th>Último registro</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="admin-table"></tbody>
+          </table>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <p>Los datos se guardan en este navegador (localStorage).</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
