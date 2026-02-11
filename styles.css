@@ -1,0 +1,107 @@
+:root {
+  font-family: Inter, system-ui, Arial, sans-serif;
+  color: #1f2937;
+  background: #f3f4f6;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+
+header,
+footer {
+  background: #111827;
+  color: #fff;
+  padding: 1rem 1.5rem;
+}
+
+header h1,
+header p,
+footer p { margin: 0.25rem 0; }
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  background: #e5e7eb;
+}
+
+.tab-btn {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #111827;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.tab-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+main { padding: 1rem; }
+
+.split-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.notice {
+  border-left: 4px solid #2563eb;
+  font-weight: 600;
+}
+
+h2 { margin-top: 0; font-size: 1.1rem; }
+h3 { margin-top: 1rem; font-size: 1rem; }
+
+.grid-form,
+.inline-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.grid-form input,
+.grid-form select,
+.inline-form input,
+button {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.grid-form input,
+.grid-form select { flex: 1 1 140px; }
+.inline-form.compact input { min-width: 140px; }
+
+button {
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+}
+button:hover { background: #1d4ed8; }
+
+button.danger { background: #dc2626; }
+button.danger:hover { background: #b91c1c; }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+th, td { text-align: left; border-bottom: 1px solid #e5e7eb; padding: 0.45rem; vertical-align: top; }
+
+.totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.muted { color: #6b7280; margin-top: -0.2rem; }
