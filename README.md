@@ -1,19 +1,17 @@
 # Peluquería Manager
 
-Aplicación web simple para gestionar una peluquería:
+Aplicación web para gestionar una peluquería por ventanas:
 
-- Registro de servicios por colaborador (corte, tinturado, ondulado, planchado y más).
-- Catálogo editable de servicios.
-- Contabilidad básica (debe/haber) con balance automático.
-- Productos para venta con stock y precio.
-- Administradores con control de asistencia.
+- **Colaboradores**: agregar/eliminar colaboradores y asignar su porcentaje de ganancia.
+- **Trabajos realizados**: registrar tipo de trabajo por colaborador y repartir automáticamente el monto (colaborador/negocio).
+- **Contabilidad**: controlar debe/haber; la parte del negocio de cada trabajo se suma automáticamente al haber.
+- **Productos**: alta y baja de productos con stock y precio.
+- **Administradores**: alta/baja de administradores y control de asistencia.
 
 ## Ejecutar
-
-Como es una app estática, puedes abrir `index.html` directamente o levantar un servidor local:
 
 ```bash
 python3 -m http.server 4173
 ```
 
-Luego visita `http://localhost:4173`.
+Luego abre `http://localhost:4173`.

@@ -2,7 +2,8 @@ const STORAGE_KEY = "peluqueria-manager-data";
 
 const defaultData = {
   catalog: ["Corte de pelo", "Tinturado", "Ondulado", "Planchado"],
-  services: [],
+  collaborators: [],
+  works: [],
   ledger: [],
   products: [],
   admins: [],
@@ -29,7 +30,7 @@ function formatMoney(value) {
   return new Intl.NumberFormat("es-ES", {
     style: "currency",
     currency: "USD",
-  }).format(value);
+  }).format(Number(value) || 0);
 }
 
 function now() {
@@ -40,9 +41,32 @@ function byId(id) {
   return document.getElementById(id);
 }
 
+function findCollaborator(id) {
+  return state.collaborators.find((item) => item.id === id);
+}
+
+function renderCollaborators() {
+  byId("collaborator-table").innerHTML = state.collaborators
+    .map((item) => {
+      const ownerPercent = 100 - item.percent;
+      return `<tr>
+        <td>${item.name}</td>
+        <td>${item.percent.toFixed(2)}%</td>
+        <td>${ownerPercent.toFixed(2)}%</td>
+        <td><button data-collaborator-delete="${item.id}">Eliminar</button></td>
+      </tr>`;
+    })
+    .join("");
+
+  const collaboratorSelect = document.querySelector("#work-form select[name='collaboratorId']");
+  collaboratorSelect.innerHTML = `<option value="">Selecciona colaborador</option>${state.collaborators
+    .map((item) => `<option value="${item.id}">${item.name} (${item.percent.toFixed(2)}%)</option>`)
+    .join("")}`;
+}
+
 function renderCatalog() {
-  const select = document.querySelector("#service-form select[name='service']");
-  select.innerHTML = `<option value="">Tipo de servicio</option>${state.catalog
+  const select = document.querySelector("#work-form select[name='service']");
+  select.innerHTML = `<option value="">Tipo de trabajo</option>${state.catalog
     .map((item) => `<option value="${item}">${item}</option>`)
     .join("")}`;
 
@@ -54,17 +78,19 @@ function renderCatalog() {
     .join("");
 }
 
-function renderServices() {
-  byId("service-table").innerHTML = state.services
-    .map(
-      (row) => `<tr>
-      <td>${row.date}</td>
-      <td>${row.collaborator}</td>
-      <td>${row.service}</td>
-      <td>${row.client}</td>
-      <td>${formatMoney(row.price)}</td>
-    </tr>`
-    )
+function renderWorks() {
+  byId("work-table").innerHTML = state.works
+    .map((row) => {
+      const collaborator = findCollaborator(row.collaboratorId);
+      return `<tr>
+        <td>${row.date}</td>
+        <td>${collaborator?.name ?? "Colaborador eliminado"}</td>
+        <td>${row.service}</td>
+        <td>${formatMoney(row.amount)}</td>
+        <td>${formatMoney(row.collaboratorShare)}</td>
+        <td>${formatMoney(row.ownerShare)}</td>
+      </tr>`;
+    })
     .join("");
 }
 
@@ -121,7 +147,38 @@ function renderAdmins() {
     .join("");
 }
 
+function bindTabs() {
+  document.querySelectorAll(".tab-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const tab = button.dataset.tab;
+      document.querySelectorAll(".tab-btn").forEach((x) => x.classList.remove("active"));
+      document.querySelectorAll(".tab-panel").forEach((x) => x.classList.remove("active"));
+      button.classList.add("active");
+      byId(`tab-${tab}`).classList.add("active");
+    });
+  });
+}
+
 function bindForms() {
+  byId("collaborator-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const name = form.name.value.trim();
+    const percent = Number(form.percent.value);
+
+    if (!name || Number.isNaN(percent) || percent <= 0 || percent >= 100) return;
+
+    state.collaborators.push({
+      id: crypto.randomUUID(),
+      name,
+      percent,
+    });
+
+    form.reset();
+    saveState();
+    renderCollaborators();
+  });
+
   byId("catalog-form").addEventListener("submit", (event) => {
     event.preventDefault();
     const form = event.target;
@@ -133,19 +190,38 @@ function bindForms() {
     renderCatalog();
   });
 
-  byId("service-form").addEventListener("submit", (event) => {
+  byId("work-form").addEventListener("submit", (event) => {
     event.preventDefault();
     const form = event.target;
-    state.services.unshift({
+    const collaboratorId = form.collaboratorId.value;
+    const collaborator = findCollaborator(collaboratorId);
+    if (!collaborator) return;
+
+    const amount = Number(form.amount.value);
+    const collaboratorShare = (amount * collaborator.percent) / 100;
+    const ownerShare = amount - collaboratorShare;
+
+    state.works.unshift({
       date: now(),
-      collaborator: form.collaborator.value.trim(),
+      collaboratorId,
       service: form.service.value,
       client: form.client.value.trim(),
-      price: Number(form.price.value),
+      amount,
+      collaboratorShare,
+      ownerShare,
     });
+
+    state.ledger.unshift({
+      date: now(),
+      description: `Ingreso por ${form.service.value} (${collaborator.name})`,
+      type: "haber",
+      amount: ownerShare,
+    });
+
     form.reset();
     saveState();
-    renderServices();
+    renderWorks();
+    renderLedger();
   });
 
   byId("ledger-form").addEventListener("submit", (event) => {
@@ -193,6 +269,14 @@ function bindDelegatedActions() {
   document.body.addEventListener("click", (event) => {
     const target = event.target;
 
+    if (target.dataset.collaboratorDelete !== undefined) {
+      state.collaborators = state.collaborators.filter((x) => x.id !== target.dataset.collaboratorDelete);
+      saveState();
+      renderCollaborators();
+      renderWorks();
+      return;
+    }
+
     if (target.dataset.catalogDelete !== undefined) {
       state.catalog.splice(Number(target.dataset.catalogDelete), 1);
       saveState();
@@ -226,13 +310,15 @@ function bindDelegatedActions() {
 }
 
 function init() {
+  bindTabs();
+  bindForms();
+  bindDelegatedActions();
+  renderCollaborators();
   renderCatalog();
-  renderServices();
+  renderWorks();
   renderLedger();
   renderProducts();
   renderAdmins();
-  bindForms();
-  bindDelegatedActions();
 }
 
 init();
